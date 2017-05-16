@@ -83,10 +83,10 @@ class LightboxTransition: UIPercentDrivenInteractiveTransition {
           }, completion: { _ in 
             // iOS9.0ぐらいのバージョンで、animateTransitionのcompletionが呼ばれないことがあり、
             // 強制的に呼ぶ
-            guard !isAnimatedTransitionCompletionCalled else {
+            guard !self.isAnimatedTransitionCompletionCalled else {
                 return
             }
-            currentTransitionContext?.completeTransition(true)
+            self.currentTransitionContext?.completeTransition(true)
         })
       } else {
         cancel()
@@ -140,10 +140,10 @@ extension LightboxTransition: UIViewControllerAnimatedTransitioning {
 
     DispatchQueue.main.async {
       UIView.animate(withDuration: duration, animations: {
-        isAnimatedTransitionCompletionCalled = false
+        self.isAnimatedTransitionCompletionCalled = false
         self.transition(!self.dismissing)
         }, completion: { _ in
-        isAnimatedTransitionCompletionCalled = true
+        self.isAnimatedTransitionCompletionCalled = true
         transitionContext.transitionWasCancelled
           ? transitionContext.completeTransition(false)
           : transitionContext.completeTransition(true)
