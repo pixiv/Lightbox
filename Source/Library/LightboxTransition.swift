@@ -2,7 +2,6 @@ import UIKit
 
 class LightboxTransition: UIPercentDrivenInteractiveTransition {
   fileprivate var currentTransitionContext: UIViewControllerContextTransitioning?
-  fileprivate var isAnimatedTransitionCompletionCalled = false
   
   lazy var panGestureRecognizer: UIPanGestureRecognizer = { [unowned self] in
     let gesture = UIPanGestureRecognizer()
@@ -83,10 +82,8 @@ class LightboxTransition: UIPercentDrivenInteractiveTransition {
           }, completion: { _ in 
             // iOS9.0ぐらいのバージョンで、animateTransitionのcompletionが呼ばれないことがあり、
             // 強制的に呼ぶ
-            guard !self.isAnimatedTransitionCompletionCalled else {
-                return
-            }
             self.currentTransitionContext?.completeTransition(true)
+            self.currentTransitionContext = nil
         })
       } else {
         cancel()
@@ -139,13 +136,12 @@ extension LightboxTransition: UIViewControllerAnimatedTransitioning {
     let duration = transitionDuration(using: transitionContext)
 
     UIView.animate(withDuration: duration, animations: {
-      self.isAnimatedTransitionCompletionCalled = false
       self.transition(!self.dismissing)
       }, completion: { _ in
-      self.isAnimatedTransitionCompletionCalled = true
       transitionContext.transitionWasCancelled
         ? transitionContext.completeTransition(false)
         : transitionContext.completeTransition(true)
+      self.currentTransitionContext = nil
     })
   }
 }
