@@ -1,7 +1,9 @@
 import UIKit
 
 class LightboxTransition: UIPercentDrivenInteractiveTransition {
-
+  fileprivate var currentTransitionContext: UIViewControllerContextTransitioning?
+  fileprivate var isAnimatedTransitionCompletionCalled = false
+  
   lazy var panGestureRecognizer: UIPanGestureRecognizer = { [unowned self] in
     let gesture = UIPanGestureRecognizer()
     gesture.addTarget(self, action: #selector(handlePanGesture(_:)))
@@ -78,7 +80,14 @@ class LightboxTransition: UIPercentDrivenInteractiveTransition {
           self.scrollView?.frame.origin.y = translation.y * 3
           controller.view.alpha = 0
           controller.view.backgroundColor = UIColor.black.withAlphaComponent(0)
-          }, completion: { _ in })
+          }, completion: { _ in 
+            // iOS9.0ぐらいのバージョンで、animateTransitionのcompletionが呼ばれないことがあり、
+            // 強制的に呼ぶ
+            guard !isAnimatedTransitionCompletionCalled else {
+                return
+            }
+            currentTransitionContext?.completeTransition(true)
+        })
       } else {
         cancel()
 
@@ -109,6 +118,8 @@ extension LightboxTransition: UIViewControllerAnimatedTransitioning {
   }
 
   func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
+    currentTransitionContext = transitionContext
+    
     let container = transitionContext.containerView
 
     guard let fromView = transitionContext.view(forKey: UITransitionContextViewKey.from),
@@ -129,8 +140,10 @@ extension LightboxTransition: UIViewControllerAnimatedTransitioning {
 
     DispatchQueue.main.async {
       UIView.animate(withDuration: duration, animations: {
+        isAnimatedTransitionCompletionCalled = false
         self.transition(!self.dismissing)
         }, completion: { _ in
+        isAnimatedTransitionCompletionCalled = true
         transitionContext.transitionWasCancelled
           ? transitionContext.completeTransition(false)
           : transitionContext.completeTransition(true)
