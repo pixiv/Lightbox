@@ -54,7 +54,7 @@ open class HeaderView: UIView {
     } else {
       button.sizeToFit()
     }
-    
+
     button.addTarget(self, action: #selector(deleteButtonDidPress(_:)),
       for: .touchUpInside)
 
@@ -85,11 +85,11 @@ open class HeaderView: UIView {
 
   // MARK: - Actions
 
-  func deleteButtonDidPress(_ button: UIButton) {
+  @objc func deleteButtonDidPress(_ button: UIButton) {
     delegate?.headerView(self, didPressDeleteButton: button)
   }
 
-  func closeButtonDidPress(_ button: UIButton) {
+  @objc func closeButtonDidPress(_ button: UIButton) {
     delegate?.headerView(self, didPressCloseButton: button)
   }
 }
@@ -98,7 +98,7 @@ open class HeaderView: UIView {
 
 extension HeaderView: LayoutConfigurable {
 
-  public func configureLayout() {
+  @objc public func configureLayout() {
     closeButton.frame.origin = CGPoint(
       x: bounds.width - closeButton.frame.width - 17, y: 0)
 
