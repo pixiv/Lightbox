@@ -98,7 +98,7 @@ open class FooterView: UIView {
 
 extension FooterView: LayoutConfigurable {
 
-  public func configureLayout() {
+  @objc public func configureLayout() {
     infoLabel.frame = CGRect(x: 17, y: 0, width: frame.width - 17 * 2, height: 35)
     infoLabel.configureLayout()
   }
@@ -108,7 +108,7 @@ extension FooterView: InfoLabelDelegate {
 
   public func infoLabel(_ infoLabel: InfoLabel, didExpand expanded: Bool) {
     resetFrames()
-    _ = expanded ? removeGradientLayer() : addGradientLayer(gradientColors)
+    _ = (expanded || infoLabel.fullText.isEmpty) ? removeGradientLayer() : addGradientLayer(gradientColors)
     delegate?.footerView(self, didExpand: expanded)
   }
 }
